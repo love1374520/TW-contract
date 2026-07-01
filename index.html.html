@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>學術文獻代印掃描服務同意書</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <style>
+        body {
+            font-family: 'PingFang TC', 'Microsoft JhengHei', sans-serif;
+            background-color: #f4f6f9;
+            color: #333;
+            line-height: 1.6;
+            padding: 30px 20px;
+            margin: 0;
+        }
+        /* A4 規範的合約外框 */
+        .contract-wrapper {
+            max-width: 790px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 50px 40px;
+            border-radius: 4px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            box-sizing: border-box;
+        }
+        h1 {
+            text-align: center;
+            font-size: 24px;
+            margin-top: 0;
+            margin-bottom: 30px;
+            color: #000;
+            letter-spacing: 1px;
+        }
+        h2 {
+            font-size: 16px;
+            border-bottom: 1.5px solid #333;
+            padding-bottom: 4px;
+            margin-top: 25px;
+            margin-bottom: 12px;
+            color: #111;
+            page-break-after: avoid; /* 防止標題與正文斷頁 */
+        }
+        /* 強制讓區塊從新的一頁開始 */
+        .page-break-heading {
+            page-break-before: always !important;
+            margin-top: 0px;
+        }
+        h3 {
+            font-size: 14px;
+            margin-top: 15px;
+            margin-bottom: 8px;
+            color: #333;
+        }
+        p, ul, ol {
+            font-size: 14px;
+            margin-top: 6px;
+            margin-bottom: 10px;
+            text-align: justify;
+        }
+        .bullet-list {
+            padding-left: 20px;
+        }
+        .bullet-list li {
+            margin-bottom: 5px;
+        }
+        /* 標準合約表格 */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            page-break-inside: avoid; /* 防止表格內部被切斷 */
+        }
+        th, td {
+            border: 1px solid #666;
+            padding: 9px 12px;
+            text-align: left;
+            font-size: 14px;
+            vertical-align: middle;
+        }
+        th {
+            background-color: #f5f5f5;
+            font-weight: bold;
+        }
+        
+        /* 雙方資訊欄標籤統一文字寬度與兩端平均對齊，並移除冒號 */
+        .align-label {
+            display: inline-block;
+            width: 75px; 
+            text-align: justify;
+            text-align-last: justify; 
+            margin-right: 8px; 
+        }
+
+        /* 輸入框與選單基礎視覺 */
+        input[type="text"], input[type="tel"], input[type="email"], input[type="number"], select {
+            width: 100%;
+            padding: 5px 8px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 3px;
+            font-size: 13px;
+            background-color: #fff;
+            font-family: inherit;
+        }
+        input:focus, select:focus {
+            border-color: #333;
+            outline: none;
+        }
+        /* 唯讀大寫與連動輸入框樣式 */
+        .readonly-amount {
+            background-color: #f8f9fa !important;
+            color: #b30000;
+            font-weight: bold;
+            cursor: not-allowed;
+        }
+        .readonly-price {
+            background-color: #f8f9fa !important;
+            font-weight: bold;
+            color: #333;
+            text-align: center;
+        }
+        /* 簽名區排版 */
+        .signature-table {
+            margin-top: 35px;
+            page-break-inside: avoid;
+        }
+        .signature-table td {
+            width: 50%;
+            padding: 20px;
+            background: #fff;
+            height: 180px;
+            vertical-align: top;
+        }
+        canvas {
+            border: 1px dashed #999;
+            background: #fcfcfc;
+            cursor: crosshair;
+            width: 100%;
+            height: 110px;
+            margin-top: 10px;
+        }
+        .btn-container {
+            text-align: center;
+            margin-top: 30px;
+            margin-bottom: 50px;
+        }
+        button {
+            padding: 12px 35px;
+            font-size: 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.2s;
+        }
+        .btn-clear {
+            background-color: #f8f9fa;
+            color: #666;
+            border: 1px solid #ccc;
+            margin-top: 8px;
+            padding: 4px 12px;
+            font-size: 12px;
+            font-weight: normal;
+        }
+        .btn-clear:hover { background-color: #edd; color: #a00; border-color: #a00; }
+        .btn-submit {
+            background-color: #002d62;
+            color: white;
+            box-shadow: 0 4px 10px rgba(0,45,98,0.2);
+        }
+        button:hover { opacity: 0.9; }
+
+        /* 導出 PDF 專用的純文字樣式替代框 */
+        .pdf-replacement {
+            display: inline-block;
+            border-bottom: 1px solid #000;
+            min-width: 60px;
+            padding: 0 4px;
+            font-weight: bold;
+            color: #000;
+        }
+
+        /* 強制在導出時移除畫布邊框和背景 */
+        @media print {
+            canvas {
+                border: none !important;
+                background: transparent !important;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="contract-wrapper" id="contract-content">
+    <h1>學術文獻代印掃描服務同意書</h1>
+
+    <table>
+        <tr>
+            <th colspan="2" style="text-align: center; background-color: #eaeaea;">甲方 (委託方)</th>
+            <th colspan="2" style="text-align: center; background-color: #eaeaea;">乙方 (服務提供方)</th>
+        </tr>
+        <tr>
+            <td style="width:15%;"><span class="align-label">甲方姓名</span></td>
+            <td style="width:35%;"><input type="text" id="partyA-name" placeholder="請輸入姓名或單位 (必填)"></td>
+            <td style="width:15%;"><span class="align-label">乙方名稱</span></td>
+            <td style="width:35%;">李怡萱</td>
+        </tr>
+        <tr>
+            <td><span class="align-label">聯絡電話</span></td>
+            <td><input type="tel" id="partyA-phone" placeholder="請輸入聯絡電話 (必填)"></td>
+            <td><span class="align-label">聯絡電話</span></td>
+            <td>0981862682</td>
+        </tr>
+        <tr>
+            <td><span class="align-label">電子信箱</span></td>
+            <td><input type="email" id="partyA-email" placeholder="請輸入電子信箱 (必填)"></td>
+            <td><span class="align-label">電子信箱</span></td>
+            <td>Shiuan991026@gamil.com</td>
+        </tr>
+        <tr>
+            <td><span class="align-label">平台暱稱</span></td>
+            <td><input type="text" id="partyA-nickname" placeholder="請輸入平台暱稱 (必填)"></td>
+            <td style="background-color: #fafafa;"></td>
+            <td style="background-color: #fafafa;"></td>
+        </tr>
+    </table>
+
+    <h2>第一條 服務內容</h2>
+    <p>1.1 甲方委託乙方提供已發表之學術論文、期刊等文獻之代印（影印）及掃描服務。具體服務內容包括：</p>
+    <ul class="bullet-list">
+        <li>根據甲方提供之文獻資訊（如標題、作者、期刊名稱、卷期、頁碼等），協助查找並獲取指定文獻；</li>
+        <li>對文獻進行影印（包括黑白/彩色影印，具體要求、單/雙面與紙張規格由甲方指定）；</li>
+        <li>對文獻進行掃描，生成電子檔案（格式包括但不限於 PDF、JPG 等，由乙方提供統一規格處理）；</li>
+        <li>將網頁或掃描之電子檔案通過指定方式（如電子郵件、雲端硬碟等）交付予甲方。</li>
+    </ul>
+    <p>1.2 乙方應確保所提供之文獻為已公開發表之合法內容，不涉及未公開之機密資訊或侵權內容。</p>
+    <p>1.3 本服務係依甲方要求專門定制之個性化商品，屬於《中華民國民法》第四百九十條規定之「承攬契約」範疇，非通用現貨產品。</p>
+
+    <h3>委託文獻清單</h3>
+    <table>
+        <thead>
+            <tr>
+                <th style="width:25%;">文獻名稱</th>
+                <th style="width:20%;">作者</th>
+                <th style="width:25%;">指定範圍</th>
+                <th style="width:15%;">索書號</th>
+                <th style="width:15%;">頁數(面)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><input type="text" id="doc-name-1" placeholder="文獻 1 名稱 (必填)"></td>
+                <td><input type="text" placeholder="選填"></td>
+                <td><input type="text" placeholder="選填"></td>
+                <td><input type="text" placeholder="選填"></td>
+                <td><input type="number" id="doc-page-1" min="0" oninput="calculateCrossTableTotal()" placeholder="頁數 (必填)"></td>
+            </tr>
+            <tr>
+                <td><input type="text" placeholder="文獻 2 名稱 (選填)"></td>
+                <td><input type="text" placeholder="選填"></td>
+                <td><input type="text" placeholder="選填"></td>
+                <td><input type="text" placeholder="選填"></td>
+                <td><input type="number" id="doc-page-2" min="0" oninput="calculateCrossTableTotal()" placeholder="選填"></td>
+            </tr>
+            <tr>
+                <td><input type="text" placeholder="文獻 3 名稱 (選填)"></td>
+                <td><input type="text" placeholder="選填"></td>
+                <td><input type="text" placeholder="選填"></td>
+                <td><input type="text" placeholder="選填"></td>
+                <td><input type="number" id="doc-page-3" min="0" oninput="calculateCrossTableTotal()" placeholder="選填"></td>
+            </tr>
+            <tr style="background-color: #fafafa; font-weight: bold;">
+                <td colspan="4" style="text-align: right; color: #555;">跨文獻合併總頁數：</td>
+                <td><input type="text" id="doc-page-summary" class="readonly-price" style="color: #002d62;" readonly value="0"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h2 class="page-break-heading">第二條 服務費用及支付方式</h2>
+    <p>2.1 服務費用：根據文獻之頁數、影印規格（黑白/彩色）、紙張大小、單雙面要求等因素，雙方協商確定具體費用。系統連動單價標準如下：</p>
+    <table>
+        <thead>
+            <tr>
+                <th style="width:20%;">服務項目</th>
+                <th style="width:20%;">紙張規格</th>
+                <th style="width:20%;">影印型態</th>
+                <th style="width:20%;">自動單價</th>
+                <th style="width:20%;">合併總頁數(面)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>黑白影印</strong></td>
+                <td>
+                    <select id="size-bw" onchange="calculatePrices()">
+                        <option value="none" selected>無</option>
+                        <option value="A4">A4</option>
+                        <option value="B4">B4</option>
+                        <option value="A3">A3</option>
+                    </select>
+                </td>
+                <td>
+                    <select id="type-bw" onchange="calculatePrices()">
+                        <option value="single">單面影印</option>
+                        <option value="double">雙面影印</option>
+                    </select>
+                </td>
+                <td><input type="text" id="price-bw" class="readonly-price" readonly value="0.0 元/面"></td>
+                <td><input type="text" id="link-page-bw" class="readonly-price" readonly value="0"></td>
+            </tr>
+            <tr>
+                <td><strong>彩色影印</strong></td>
+                <td>
+                    <select id="size-color" onchange="calculatePrices()">
+                        <option value="none" selected>無</option>
+                        <option value="A4">A4</option>
+                        <option value="B4">B4</option>
+                        <option value="A3">A3</option>
+                    </select>
+                </td>
+                <td>
+                    <select id="type-color" onchange="calculatePrices()">
+                        <option value="single">單面影印</option>
+                        <option value="double">雙面影印</option>
+                    </select>
+                </td>
+                <td><input type="text" id="price-color" class="readonly-price" readonly value="0.0 元/面"></td>
+                <td><input type="text" id="link-page-color" class="readonly-price" readonly value="0"></td>
+            </tr>
+            <tr>
+                <td><strong>掃描 (PDF)</strong></td>
+                <td>
+                    <select id="size-scan" onchange="calculatePrices()">
+                        <option value="none" selected>無</option>
+                        <option value="scan">掃描</option>
+                    </select>
+                </td>
+                <td>
+                    <select id="type-scan">
+                        <option value="bw">黑白</option>
+                        <option value="color">彩色</option>
+                    </select>
+                </td>
+                <td><input type="text" id="price-scan" class="readonly-price" readonly value="0.0 元/面"></td>
+                <td><input type="text" id="link-page-scan" class="readonly-price" readonly value="0"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>2.2 支付方式與計費規則：</p>
+    <ul class="bullet-list">
+        <li>甲方應於服務開始前 1 日內，向乙方支付服務費訂金，金額為：<strong>新臺幣 500 元整</strong>（大寫：新臺幣伍佰元整）；後續可抵扣於全額款項內。</li>
+        <li><strong>服務費加收條款：本項目將依據案件處理需求，每案固定額外加收新臺幣 500 元整之服務費用。</strong></li>
+        <li>甲方應於服務開始後 1 日內，支付包含上述固定服務費在內之全額款項：新臺幣 <input type="number" style="width: 85px;" id="total-num" class="readonly-amount" readonly placeholder="自動計算總價"> 元（大寫：新臺幣 <input type="text" style="width: 180px;" id="total-word" class="readonly-amount" readonly placeholder="自動生成大寫金額"> ）。（※ 此總金額已包含固定服務費 500元）</li>
+    </ul>
+
+    <h2>第三條 雙方權利與義務</h2>
+    <p>3.1 甲方提供之文獻及電子檔案僅用於個人學習、研究等非商業目的，不得用於任何商業用途。</p>
+    <p>3.2 乙方應盡最大努力獲取文獻，若因故無法獲取應及時通知並退還費用。</p>
+
+    <h2>第四條 知識產權與保密條款（非常重要）</h2>
+    <p>4.1 乙方僅提供代印、掃描服務，不享有任何智慧財產權。</p>
+    <p>4.2 雙方對在服務過程中知悉之個人資料負保密義務，期限為 3 年。</p>
+    <p>4.3 甲方承諾：相關內容僅基於個人研究所需，在不違反著作權法之情形下不侵犯任何第三方權益。</p>
+    <p>4.4 若因甲方引發侵權糾紛，全部法律責任由甲方獨立承擔。</p>
+
+    <h2 class="page-break-heading">第五條 違約責任與爭議解決</h2>
+    <p>5.1 若甲方未按時支付服務費用，每逾期一個月，應按照未支付金額之千分之五向乙方支付違約金。</p>
+    <p>5.2 本協議引起之任何爭議，雙方應先盡力協商，協商不成時，雙方均<strong>有權</strong>向<strong>乙方（李怡萱）所在地</strong>有管轄權之法院提起民事訴訟。</p>
+
+    <table class="signature-table">
+        <tr>
+            <td>
+                <strong>甲方 (簽字蓋章)</strong>
+                <canvas id="canvas-partyA"></canvas>
+                <div style="text-align: center;">
+                    <button class="btn-clear" id="clear-btn" onclick="clearCanvas()">清除重簽</button>
+                </div>
+                <p style="margin-top:15px; margin-bottom:0;">日期：<span id="date-partyA"></span></p>
+            </td>
+            <td>
+                <strong>乙方 (簽字蓋章)</strong>
+                <div style="font-family: 'DFKai-SB', 'BiauKai', serif; font-size: 26px; color: #b30000; font-weight: bold; margin-top: 45px; margin-bottom: 40px; letter-spacing: 5px; text-align: center;">
+                    李怡萱
+                </div>
+                <p style="margin-top:20px; margin-bottom:0;">日期：<span id="date-partyB"></span></p>
+            </td>
+        </tr>
+    </table>
+</div>
+
+<div class="btn-container">
+    <button class="btn-submit" onclick="generatePDF()">確認資訊並生成常規合約 PDF</button>
+</div>
+
+<script>
+    // 同步當前系統日期
+    const today = new Date();
+    const dateString = `${today.getFullYear()} 年 ${today.getMonth() + 1} 月 ${today.getDate()} 日`;
+    document.getElementById('date-partyA').innerText = dateString;
+    document.getElementById('date-partyB').innerText = dateString;
+
+    // 單價全域變數 (預設無，初始單價設為 0)
+    let currentBwUnitPrice = 0.0;
+    let currentColorUnitPrice = 0.0;
+    let currentScanUnitPrice = 0.0;
+
+    // 跨表格核心連動計算
+    function calculateCrossTableTotal() {
+        const p1 = parseFloat(document.getElementById('doc-page-1').value) || 0;
+        const p2 = parseFloat(document.getElementById('doc-page-2').value) || 0;
+        const p3 = parseFloat(document.getElementById('doc-page-3').value) || 0;
+
+        const totalCombinedPages = p1 + p2 + p3;
+        document.getElementById('doc-page-summary').value = totalCombinedPages;
+
+        calculatePrices();
+    }
+
+    // 動態價格連動與無服務的單價清零
+    function calculatePrices() {
+        const summaryPages = parseFloat(document.getElementById('doc-page-summary').value) || 0;
+
+        // 黑白影印連動：A4/B4 為 4元，A3 為 8元
+        const sizeBw = document.getElementById('size-bw').value;
+        const priceBwInput = document.getElementById('price-bw');
+        if (sizeBw === 'none') {
+            currentBwUnitPrice = 0.0;
+            document.getElementById('link-page-bw').value = 0;
+        } else if (sizeBw === 'A3') {
+            currentBwUnitPrice = 8.0;
+            document.getElementById('link-page-bw').value = summaryPages;
+        } else {
+            currentBwUnitPrice = 4.0;
+            document.getElementById('link-page-bw').value = summaryPages;
+        }
+        priceBwInput.value = currentBwUnitPrice.toFixed(1) + " 元/面";
+
+        // 彩色影印連動：A4/B4 為 12元，A3 為 22元
+        const sizeColor = document.getElementById('size-color').value;
+        const priceColorInput = document.getElementById('price-color');
+        if (sizeColor === 'none') {
+            currentColorUnitPrice = 0.0;
+            document.getElementById('link-page-color').value = 0;
+        } else if (sizeColor === 'A3') {
+            currentColorUnitPrice = 22.0;
+            document.getElementById('link-page-color').value = summaryPages;
+        } else {
+            currentColorUnitPrice = 12.0;
+            document.getElementById('link-page-color').value = summaryPages;
+        }
+        priceColorInput.value = currentColorUnitPrice.toFixed(1) + " 元/面";
+
+        // 掃描連動：台灣版規格固定每面 2.0 元
+        const sizeScan = document.getElementById('size-scan').value;
+        const priceScanInput = document.getElementById('price-scan');
+        if (sizeScan === 'none') {
+            currentScanUnitPrice = 0.0;
+            document.getElementById('link-page-scan').value = 0;
+        } else {
+            currentScanUnitPrice = 2.0;
+            document.getElementById('link-page-scan').value = summaryPages;
+        }
+        priceScanInput.value = currentScanUnitPrice.toFixed(1) + " 元/面";
+
+        autoSumBudget();
+    }
+
+    // 全自動計算總金額（加收固定 500 元服務費）
+    function autoSumBudget() {
+        const pageBw = parseFloat(document.getElementById('link-page-bw').value) || 0;
+        const pageColor = parseFloat(document.getElementById('link-page-color').value) || 0;
+        const pageScan = parseFloat(document.getElementById('link-page-scan').value) || 0;
+
+        // 判斷是否需要加入固定服務費 500 元（任一項目有消費即加入）
+        let baseServiceFee = 0;
+        if (pageBw > 0 || pageColor > 0 || pageScan > 0) {
+            baseServiceFee = 500;
+        }
+
+        const totalPrice = (currentBwUnitPrice * pageBw) + (currentColorUnitPrice * pageColor) + (currentScanUnitPrice * pageScan) + baseServiceFee;
+        
+        const numInput = document.getElementById('total-num');
+        const wordInput = document.getElementById('total-word');
+
+        if (totalPrice === 0) {
+            numInput.value = '';
+            wordInput.value = '';
+            return;
+        }
+
+        numInput.value = totalPrice;
+        wordInput.value = numberToChineseTW(totalPrice);
+    }
+
+    // 阿拉伯數字轉繁體中文大寫金額邏輯（符合台灣習慣）
+    function numberToChineseTW(n) {
+        if (n === 0) return '零元整';
+        const fraction = ['角', '分'];
+        const digit = ['零', '壹', '貳', '參', '肆', '伍', '陸', '柒', '捌', '玖'];
+        const unit = [
+            ['元', '萬', '億'],
+            ['', '拾', '佰', '仟']
+        ];
+        
+        let s = '';
+        let p = Math.floor(n * 100 % 100);
+        for (let i = 0; i < fraction.length; i++) {
+            if (p > 0) {
+                let d = Math.floor(n * Math.pow(10, i + 1) % 10);
+                if (d > 0) s += digit[d] + fraction[i];
+            }
+        }
+        
+        let integerPart = Math.floor(n);
+        if (s === '') s = '整';
+        let unitHead = s; s = '';
+        
+        for (let i = 0; i < unit[0].length && integerPart > 0; i++) {
+            let p = '';
+            for (let j = 0; j < unit[1].length && integerPart > 0; j++) {
+                p = digit[integerPart % 10] + unit[1][j] + p;
+                integerPart = Math.floor(integerPart / 10);
+            }
+            s = p.replace(/(零.)*零$/, '').replace(/^$/, '零') + unit[0][i] + s;
+        }
+        
+        let result = s.replace(/(零.)*零元/, '元').replace(/(零.)+/g, '零').replace(/^整$/, '零元整');
+        if (result.startsWith('元')) result = result.substring(1);
+        return result + (unitHead === '整' ? '整' : '');
+    }
+
+    // 簽名板 Canvas 邏輯
+    const canvas = document.getElementById('canvas-partyA');
+    const ctx = canvas.getContext('2d');
+    let isDrawing = false;
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 2.5; ctx.lineCap = 'round';
+    function resizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width; canvas.height = 110;
+        ctx.lineWidth = 2.5; ctx.lineCap = 'round';
+    }
+    window.addEventListener('resize', resizeCanvas);
+    setTimeout(resizeCanvas, 300);
+    function getPos(e) {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return { x: clientX - rect.left, y: clientY - rect.top };
+    }
+    function startDraw(e) { isDrawing = true; const pos = getPos(e); ctx.beginPath(); ctx.moveTo(pos.x, pos.y); e.preventDefault(); }
+    function draw(e) { if (!isDrawing) return; const pos = getPos(e); ctx.lineTo(pos.x, pos.y); ctx.stroke(); e.preventDefault(); }
+    function stopDraw() { isDrawing = false; }
+    canvas.addEventListener('mousedown', startDraw); canvas.addEventListener('mousemove', draw); canvas.addEventListener('mouseup', stopDraw);
+    canvas.addEventListener('touchstart', startDraw); canvas.addEventListener('touchmove', draw); canvas.addEventListener('touchend', stopDraw);
+    function clearCanvas() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+
+    // 驗證必填欄位並導出 PDF
+    function generatePDF() {
+        const nameA = document.getElementById('partyA-name').value.trim();
+        const phoneA = document.getElementById('partyA-phone').value.trim();
+        const emailA = document.getElementById('partyA-email').value.trim();
+        const nicknameA = document.getElementById('partyA-nickname').value.trim();
+        const docName1 = document.getElementById('doc-name-1').value.trim();
+        const docPage1 = parseFloat(document.getElementById('doc-page-1').value) || 0;
+
+        if (!nameA) { alert('請填寫甲方「甲方姓名」，此為必填欄位。'); return; }
+        if (!phoneA) { alert('請填寫甲方「聯絡電話」，此為必填欄位。'); return; }
+        if (!emailA) { alert('請填寫甲方「電子信箱」，此為必填欄位。'); return; }
+        if (!nicknameA) { alert('請填寫甲方「平台暱稱」，此為必填欄位。'); return; }
+        if (!docName1) { alert('請至少填寫第一本「文獻名稱」，作為主要的委託標的。'); return; }
+        if (docPage1 <= 0) { alert('請填寫第一本「文獻頁數」，作為合併算費的基础。'); return; }
+
+        // 防呆攔截：若勾選了服務卻沒有文獻總頁數
+        const sizeBw = document.getElementById('size-bw').value;
+        const sizeColor = document.getElementById('size-color').value;
+        const sizeScan = document.getElementById('size-scan').value;
+        const summaryPages = parseFloat(document.getElementById('doc-page-summary').value) || 0;
+
+        if (sizeBw !== 'none' && summaryPages <= 0) { alert('您已勾選黑白影印，但文獻總頁數為0，請先輸入文獻頁數。'); return; }
+        if (sizeColor !== 'none' && summaryPages <= 0) { alert('您已勾選彩色影印，但文獻總頁數為0，請先輸入文獻頁數。'); return; }
+        if (sizeScan !== 'none' && summaryPages <= 0) { alert('您已勾選掃描服務，但文獻總頁數為0，請先輸入文獻頁數。'); return; }
+
+        document.getElementById('clear-btn').style.display = 'none';
+
+        const allInputs = document.querySelectorAll('input, select');
+        const originalStates = [];
+
+        allInputs.forEach(input => {
+            let textValue = input.value;
+            if (input.tagName === 'SELECT') {
+                const selectedOption = input.options[input.selectedIndex];
+                textValue = selectedOption ? selectedOption.text : input.value;
+            }
+
+            originalStates.push({ parent: input.parentNode, sibling: input.nextSibling, inputNode: input });
+            const span = document.createElement('span');
+            span.className = 'pdf-replacement';
+            span.innerText = textValue || ' '; 
+            input.parentNode.replaceChild(span, input);
+        });
+
+        const element = document.getElementById('contract-content');
+        const opt = {
+            margin:       [15, 15, 15, 15], 
+            filename:     `學術文獻代印服務同意書_${nameA}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2.5, useCORS: true, scrollY: 0 },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+        };
+
+        html2pdf().set(opt).from(element).save().then(() => {
+            originalStates.forEach(state => {
+                const replacement = state.parent.querySelector('.pdf-replacement');
+                if (replacement) state.parent.replaceChild(state.inputNode, replacement);
+            });
+            document.getElementById('clear-btn').style.display = 'inline-block';
+            calculateCrossTableTotal(); // 還原連動
+        }).catch(err => {
+            console.error("PDF生成失敗：", err);
+            window.location.reload();
+        });
+    }
+</script>
+
+</body>
+</html>
