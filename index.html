@@ -40,7 +40,7 @@
         .readonly-amount { background-color: #f8f9fa !important; color: #b30000; font-weight: bold; cursor: not-allowed; }
         .readonly-price { background-color: #f8f9fa !important; font-weight: bold; color: #333; text-align: center; }
         .fee-block { page-break-inside: avoid !important; margin-top: 15px; }
-        /* 核心關鍵：確保第五條與簽名欄永遠黏在一起 */
+        /* 確保第五條與簽名欄永遠黏在一起 */
         .sticky-footer-block { page-break-inside: avoid !important; margin-top: 25px; }
         .signature-table { margin-top: 20px; width: 100%; page-break-inside: avoid !important; }
         .signature-table td { width: 50%; padding: 20px; background: #fff; height: 180px; vertical-align: top; }
@@ -151,7 +151,7 @@
                     <th style="width:20%;">紙張/交付規格</th>
                     <th style="width:15%;">印刷型態</th>
                     <th style="width:15%;">自動單價</th>
-                    <th style="width:20%;">本項計費面數</th>
+                    <th style="width:20%;">本項計費總金額</th>
                 </tr>
             </thead>
             <tbody>
@@ -178,7 +178,7 @@
                         </select>
                     </td>
                     <td><input type="text" id="price-display" class="readonly-price" readonly value="4.0 元/面"></td>
-                    <td><input type="text" id="link-page-display" class="readonly-price" readonly value="0"></td>
+                    <td><input type="text" id="total-item-price" class="readonly-price" readonly value="0.0 元"></td>
                 </tr>
             </tbody>
         </table>
@@ -257,13 +257,13 @@
         const sizePrint = document.getElementById('size-print').value;
         
         const priceDisplay = document.getElementById('price-display');
-        const linkPageDisplay = document.getElementById('link-page-display');
+        const itemTotalDisplay = document.getElementById('total-item-price');
         const sizeSelect = document.getElementById('size-print');
         const typeSelect = document.getElementById('type-print');
 
+        // 單價判定邏輯
         if (serviceType === 'none') {
             currentUnitPrice = 0.0;
-            linkPageDisplay.value = 0;
             sizeSelect.disabled = false;
             typeSelect.disabled = false;
         } else if (serviceType === 'bw') {
@@ -274,7 +274,6 @@
             } else {
                 currentUnitPrice = 4.0; 
             }
-            linkPageDisplay.value = summaryPages;
         } else if (serviceType === 'color') {
             sizeSelect.disabled = false;
             typeSelect.disabled = false;
@@ -283,26 +282,25 @@
             } else {
                 currentUnitPrice = 12.0; 
             }
-            linkPageDisplay.value = summaryPages;
         } else if (serviceType === 'scan') {
             currentUnitPrice = 2.0;
-            linkPageDisplay.value = summaryPages;
             sizeSelect.disabled = true;
             typeSelect.disabled = true;
         }
 
         priceDisplay.value = currentUnitPrice.toFixed(1) + " 元/面";
-        autoSumBudget();
+        
+        // 核心修改：計算本項計費總金額
+        const itemTotal = currentUnitPrice * summaryPages;
+        itemTotalDisplay.value = itemTotal.toFixed(2) + " 元";
+        
+        autoSumBudget(itemTotal, summaryPages);
     }
 
-    function autoSumBudget() {
-        const pageCount = parseFloat(document.getElementById('link-page-display').value) || 0;
-        const basePrice = currentUnitPrice * pageCount;
-        
+    function autoSumBudget(basePrice, pageCount) {
         let totalPrice = 0;
         let depositPrice = 0;
         
-        // 核心修復：只有在有輸入頁數時，才會加計 500 元，並執行計算
         if (basePrice > 0 || pageCount > 0) {
             totalPrice = basePrice + 500.0;
             depositPrice = totalPrice * 0.5;
@@ -313,7 +311,6 @@
         const depositNumInput = document.getElementById('deposit-num');
         const depositWordInput = document.getElementById('deposit-word');
 
-        // 核心修復：如果沒有輸入任何數字，自動清空欄位，呈現預設的「自動計算」提示
         if (totalPrice === 0) {
             numInput.value = '';
             wordInput.value = '';
