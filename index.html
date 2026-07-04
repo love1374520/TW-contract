@@ -211,12 +211,16 @@
                 <td>
                     <strong>甲方 (簽字蓋章)</strong>
                     <canvas id="canvas-partyA"></canvas>
-                    <div style="text-align: center;"><button class="btn-clear" id="clear-btn" onclick="clearCanvas()">清除重簽</button></div>
+                    <div style="text-align: center;">
+                        <button class="btn-clear" id="clear-btn" onclick="clearCanvas()">清除重簽</button>
+                    </div>
                     <p style="margin-top:15px; margin-bottom:0;">日期：<span id="date-partyA"></span></p>
                 </td>
                 <td>
                     <strong>乙方 (簽字蓋章)</strong>
-                    <div style="font-family: 'SimSun', serif; font-size: 26px; color: #b30000; font-weight: bold; margin-top: 45px; margin-bottom: 40px; letter-spacing: 5px; text-align: center;">李怡萱</div>
+                    <div style="font-family: 'SimSun', serif; font-size: 26px; color: #b30000; font-weight: bold; margin-top: 45px; margin-bottom: 40px; letter-spacing: 5px; text-align: center;">
+                        李怡萱
+                    </div>
                     <p style="margin-top:20px; margin-bottom:0;">日期：<span id="date-partyB"></span></p>
                 </td>
             </tr>
@@ -238,4 +242,254 @@
 
     function calculateCrossTableTotal() {
         const p1 = parseFloat(document.getElementById('doc-page-1').value) || 0;
-        const p2 = parseFloat(document.
+        const p2 = parseFloat(document.getElementById('doc-page-2').value) || 0;
+        const p3 = parseFloat(document.getElementById('doc-page-3').value) || 0;
+
+        const totalCombinedPages = p1 + p2 + p3;
+        document.getElementById('doc-page-summary').value = totalCombinedPages;
+
+        calculatePrices();
+    }
+
+    function calculatePrices() {
+        const summaryPages = parseFloat(document.getElementById('doc-page-summary').value) || 0;
+        const serviceType = document.getElementById('service-type').value;
+        const sizePrint = document.getElementById('size-print').value;
+        
+        const priceDisplay = document.getElementById('price-display');
+        const linkPageDisplay = document.getElementById('link-page-display');
+        const sizeSelect = document.getElementById('size-print');
+        const typeSelect = document.getElementById('type-print');
+
+        if (serviceType === 'none') {
+            currentUnitPrice = 0.0;
+            linkPageDisplay.value = 0;
+            sizeSelect.disabled = false;
+            typeSelect.disabled = false;
+        } else if (serviceType === 'bw') {
+            sizeSelect.disabled = false;
+            typeSelect.disabled = false;
+            if (sizePrint === 'A3') {
+                currentUnitPrice = 8.0;
+            } else {
+                currentUnitPrice = 4.0; 
+            }
+            linkPageDisplay.value = summaryPages;
+        } else if (serviceType === 'color') {
+            sizeSelect.disabled = false;
+            typeSelect.disabled = false;
+            if (sizePrint === 'A3') {
+                currentUnitPrice = 22.0;
+            } else {
+                currentUnitPrice = 12.0; 
+            }
+            linkPageDisplay.value = summaryPages;
+        } else if (serviceType === 'scan') {
+            currentUnitPrice = 2.0;
+            linkPageDisplay.value = summaryPages;
+            sizeSelect.disabled = true;
+            typeSelect.disabled = true;
+        }
+
+        priceDisplay.value = currentUnitPrice.toFixed(1) + " 元/面";
+        autoSumBudget();
+    }
+
+    function autoSumBudget() {
+        const pageCount = parseFloat(document.getElementById('link-page-display').value) || 0;
+        const basePrice = currentUnitPrice * pageCount;
+        
+        let totalPrice = 0;
+        let depositPrice = 0;
+        
+        // 核心修復：只有在有輸入頁數時，才會加計 500 元，並執行計算
+        if (basePrice > 0 || pageCount > 0) {
+            totalPrice = basePrice + 500.0;
+            depositPrice = totalPrice * 0.5;
+        }
+
+        const numInput = document.getElementById('total-num');
+        const wordInput = document.getElementById('total-word');
+        const depositNumInput = document.getElementById('deposit-num');
+        const depositWordInput = document.getElementById('deposit-word');
+
+        // 核心修復：如果沒有輸入任何數字，自動清空欄位，呈現預設的「自動計算」提示
+        if (totalPrice === 0) {
+            numInput.value = '';
+            wordInput.value = '';
+            depositNumInput.value = '';
+            depositWordInput.value = '';
+            return;
+        }
+
+        numInput.value = totalPrice.toFixed(2);
+        wordInput.value = numberToChineseTW(totalPrice);
+        
+        depositNumInput.value = depositPrice.toFixed(2);
+        depositWordInput.value = numberToChineseTW(depositPrice);
+    }
+
+    function numberToChineseTW(money) {
+        if (money === 0) return '零元整';
+        const cnNums = ['零', '壹', '貳', '參', '肆', '伍', '陸', '柒', '捌', '玖'];
+        const cnIntRadice = ['', '拾', '佰', '仟'];
+        const cnIntUnits = ['', '萬', '億', '兆'];
+        const cnDecUnits = ['角', '分'];
+        const cnInteger = '整';
+        const cnIntLast = '元';
+
+        let integerNum; 
+        let decimalNum; 
+        let chineseStr = ''; 
+
+        money = Math.round(money * 100) / 100; 
+        let moneyStr = money.toString();
+        
+        if (moneyStr.indexOf('.') === -1) {
+            integerNum = moneyStr;
+            decimalNum = '';
+        } else {
+            let parts = moneyStr.split('.');
+            integerNum = parts[0];
+            decimalNum = parts[1].substring(0, 2);
+            if (decimalNum.length === 1) decimalNum += '0';
+        }
+
+        if (parseInt(integerNum, 10) > 0) {
+            let zeroCount = 0;
+            let IntLen = integerNum.length;
+            for (let i = 0; i < IntLen; i++) {
+                let n = integerNum.substr(i, 1);
+                let p = IntLen - i - 1;
+                let q = Math.floor(p / 4);
+                let m = p % 4;
+                if (n === '0') {
+                    zeroCount++;
+                } else {
+                    if (zeroCount > 0) chineseStr += cnNums[0];
+                    zeroCount = 0;
+                    chineseStr += cnNums[parseInt(n)] + cnIntRadice[m];
+                }
+                if (m === 0 && zeroCount < 4) chineseStr += cnIntUnits[q];
+            }
+            chineseStr += cnIntLast;
+        }
+
+        if (decimalNum !== '') {
+            let decLen = decimalNum.length;
+            for (let i = 0; i < decLen; i++) {
+                let n = decimalNum.substr(i, 1);
+                if (n !== '0') {
+                    chineseStr += cnNums[Number(n)] + cnDecUnits[i];
+                } else if (i === 0 && parseInt(integerNum, 10) > 0 && decimalNum.substr(1, 1) !== '0') {
+                    chineseStr += cnNums[0]; 
+                }
+            }
+        }
+
+        if (chineseStr === '') {
+            chineseStr += cnNums[0] + cnIntLast + cnInteger;
+        } else if (decimalNum === '' || decimalNum === '00') {
+            chineseStr += cnInteger;
+        }
+        return chineseStr;
+    }
+
+    const canvas = document.getElementById('canvas-partyA');
+    const ctx = canvas.getContext('2d');
+    let isDrawing = false;
+    ctx.strokeStyle = '#000'; ctx.lineWidth = 2.5; ctx.lineCap = 'round';
+    function resizeCanvas() {
+        const rect = canvas.getBoundingClientRect();
+        canvas.width = rect.width; canvas.height = 110;
+        ctx.lineWidth = 2.5; ctx.lineCap = 'round';
+    }
+    window.addEventListener('resize', resizeCanvas);
+    setTimeout(resizeCanvas, 300);
+    function getPos(e) {
+        const rect = canvas.getBoundingClientRect();
+        const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+        const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+        return { x: clientX - rect.left, y: clientY - rect.top };
+    }
+    function startDraw(e) { isDrawing = true; const pos = getPos(e); ctx.beginPath(); ctx.moveTo(pos.x, pos.y); e.preventDefault(); }
+    function draw(e) { if (!isDrawing) return; const pos = getPos(e); ctx.lineTo(pos.x, pos.y); ctx.stroke(); e.preventDefault(); }
+    function stopDraw() { isDrawing = false; }
+    canvas.addEventListener('mousedown', startDraw); canvas.addEventListener('mousemove', draw); canvas.addEventListener('mouseup', stopDraw);
+    canvas.addEventListener('touchstart', startDraw); canvas.addEventListener('touchmove', draw); canvas.addEventListener('touchend', stopDraw);
+    function clearCanvas() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
+
+    function generatePDF() {
+        const nameA = document.getElementById('partyA-name').value.trim();
+        const phoneA = document.getElementById('partyA-phone').value.trim();
+        const emailA = document.getElementById('partyA-email').value.trim();
+        const nicknameA = document.getElementById('partyA-nickname').value.trim();
+        const docName1 = document.getElementById('doc-name-1').value.trim();
+        const docPage1 = parseFloat(document.getElementById('doc-page-1').value) || 0;
+
+        if (!nameA) { alert('請填寫甲方「甲方姓名」，此為必填寫欄位。'); return; }
+        if (!phoneA) { alert('請填寫甲方「聯絡電話」，此為必填寫欄位。'); return; }
+        if (!emailA) { alert('請填寫甲方「電子信箱」，此為必填寫欄位。'); return; }
+        if (!nicknameA) { alert('請填寫甲方「平台暱稱」，此為必填寫欄位。'); return; }
+        if (!docName1) { alert('請至少填寫第一本「文獻名稱」，作為主要的委託標的。'); return; }
+        if (docPage1 <= 0) { alert('請填寫第一本「文獻頁數」，作為合併算費的基礎。'); return; }
+
+        document.getElementById('clear-btn').style.display = 'none';
+
+        const allInputs = document.querySelectorAll('input, select');
+        const originalStates = [];
+
+        allInputs.forEach(input => {
+            let textValue = input.value;
+            if (input.tagName === 'SELECT') {
+                const selectedOption = input.options[input.selectedIndex];
+                textValue = selectedOption ? selectedOption.text : input.value;
+            }
+
+            originalStates.push({ parent: input.parentNode, sibling: input.nextSibling, inputNode: input });
+            const span = document.createElement('span');
+            span.className = 'pdf-replacement';
+            span.innerText = textValue || ' '; 
+            input.parentNode.replaceChild(span, input);
+        });
+
+        const element = document.getElementById('contract-content');
+        
+        const opt = {
+            margin:       [15, 15, 22, 15], 
+            filename:     `學術文獻代印服務同意書_${nameA}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { 
+                scale: 2.3,             
+                useCORS: true, 
+                scrollY: 0,
+                letterRendering: true   
+            },
+            jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' },
+            pagebreak:    { mode: ['avoid-all', 'css'] } 
+        };
+
+        html2pdf().set(opt).from(element).toPdf().get('pdf').then(function(pdf) {
+            const totalPages = pdf.internal.getNumberOfPages(); 
+            for (let i = 1; i <= totalPages; i++) {
+                pdf.setPage(i);
+                pdf.setFontSize(10);
+                pdf.setTextColor(110);
+                pdf.text('第 ' + i + ' 頁，共計 ' + totalPages + ' 頁', pdf.internal.pageSize.getWidth() / 2, pdf.internal.pageSize.getHeight() - 11, { align: 'center' });
+            }
+        }).save().then(() => {
+            originalStates.forEach(state => {
+                const replacement = state.parent.querySelector('.pdf-replacement');
+                if (replacement) state.parent.replaceChild(state.inputNode, replacement);
+            });
+            document.getElementById('clear-btn').style.display = 'inline-block';
+            calculateCrossTableTotal();
+        }).catch(err => {
+            console.error("PDF生成失敗：", err);
+            window.location.reload();
+        });
+    }
+</script>
+
+</body>
+</html>
