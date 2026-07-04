@@ -92,14 +92,58 @@
     </table>
 
     <h2>第一條 服務內容</h2>
+    <p>1.1 甲方委託乙方提供已發表的學術論文、期刊等文獻的代印（印刷）及掃描服務。具體服務內容包括：</p>
     <ul class="bullet-list">
-        <li>根據甲方提供的文獻資訊，協助查找並獲取指定文獻；</li>
-        <li>提供相應之黑白印刷、彩色印刷或電子掃描服務；</li>
-        <li>將網頁或掃描的電子檔案（PDF格式）或實體印刷本透過電子信箱或官方 LINE（@675hctmf）交付給甲方。</li>
+        <li>根據甲方提供的文獻資訊（如標題、作者、期刊名稱、卷期、頁碼等），協助查找並獲取指定文獻；</li>
+        <li>根據甲方於本合約中選定之服務項目，提供相應之黑白印刷、彩色印刷或電子掃描服務；</li>
+        <li>將網頁或掃描的電子檔案（PDF格式）或實體印刷本透過指定方式（電子信箱或官方 LINE：@675hctmf）交付給甲方。</li>
     </ul>
+    <p>1.2 乙方應確保所提供的文獻為已公開發表的合法內容，不涉及未公開的機密資訊或侵權內容。</p>
+    <p>1.3 本服務為根據甲方要求專門定制的個性化商品，屬於民法規定之承攬合約範疇，非通用現貨產品。</p>
+
+    <h3>委託文獻清單</h3>
+    <table>
+        <thead>
+            <tr>
+                <th style="width:30%;">文獻名稱</th>
+                <th style="width:20%;">作者</th>
+                <th style="width:20%;">指定範圍</th>
+                <th style="width:15%;">書索號</th>
+                <th style="width:15%;">頁數(面)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><input type="text" id="doc-name-1" placeholder="文獻 1 名稱 (必填)"></td>
+                <td><input type="text" placeholder="選填"></td>
+                <td><input type="text" placeholder="選填"></td>
+                <td><input type="text" placeholder="選填"></td>
+                <td><input type="number" id="doc-page-1" min="0" oninput="calculateCrossTableTotal()" placeholder="頁數 (必填)"></td>
+            </tr>
+            <tr>
+                <td><input type="text" placeholder="文獻 2 名稱 (選填)"></td>
+                <td><input type="text" placeholder="選填"></td>
+                <td><input type="text" placeholder="選填"></td>
+                <td><input type="text" placeholder="選填"></td>
+                <td><input type="number" id="doc-page-2" min="0" oninput="calculateCrossTableTotal()" placeholder="選填"></td>
+            </tr>
+            <tr>
+                <td><input type="text" placeholder="文獻 3 名稱 (選填)"></td>
+                <td><input type="text" placeholder="選填"></td>
+                <td><input type="text" placeholder="選填"></td>
+                <td><input type="text" placeholder="選填"></td>
+                <td><input type="number" id="doc-page-3" min="0" oninput="calculateCrossTableTotal()" placeholder="選填"></td>
+            </tr>
+            <tr style="background-color: #fafafa; font-weight: bold;">
+                <td colspan="4" style="text-align: right; color: #555;">跨文獻委託合併總頁數（面）：</td>
+                <td><input type="text" id="doc-page-summary" class="readonly-price" style="color: #002d62;" readonly value="0"></td>
+            </tr>
+        </tbody>
+    </table>
 
     <div class="fee-block">
         <h2>第二條 服務費用及支付方式</h2>
+        <p>2.1 服務費用：根據委託之服務項目、頁數及紙張規格等因素確定具體費用。系統聯動單價標準如下（單次委託僅限單一類別計算）：</p>
         <table>
             <thead>
                 <tr>
@@ -138,16 +182,29 @@
                 </tr>
             </tbody>
         </table>
+
+        <p>2.2 支付方式與計費規則：</p>
         <ul class="bullet-list">
-            <li><strong>服務費條款：每案固定加收新台幣 500 元之服務費。</strong></li>
-            <li>全額款項：新台幣 <input type="text" style="width: 85px;" id="total-num" class="readonly-amount" readonly> 元（大寫：<input type="text" style="width: 210px;" id="total-word" class="readonly-amount" readonly>）。</li>
+            <li>甲方應在服務開始前 1 日內，向乙方支付服務費定金（<strong>總金額之 50%</strong>），金額為：新台幣 <input type="text" style="width: 85px;" id="deposit-num" class="readonly-amount" readonly placeholder="自動計算"> 元（大寫：新台幣 <input type="text" style="width: 210px;" id="deposit-word" class="readonly-amount" readonly placeholder="自動生成大寫金額"> ）；後續可抵扣於全額款項內。</li>
+            <li><strong>服務費固定條款：本項目將依據委託項目之基礎費用，每案固定額外加收新台幣 500 元之服務費用。</strong></li>
+            <li>甲方應在服務開始後 1 日內，支付包含固定 500 元服務費在內的全額款項：新台幣 <input type="text" style="width: 85px; " id="total-num" class="readonly-amount" readonly placeholder="自動計算總價"> 元（大寫：新台幣 <input type="text" style="width: 210px; " id="total-word" class="readonly-amount" readonly placeholder="自動生成大寫金額"> ）。（※ 此總金額已包含基礎委託費及固定 500 元之服務費）</li>
         </ul>
     </div>
 
-    <!-- 這裡將第五條與簽名欄包在同一個 sticky-footer-block 中 -->
+    <h2>第三條 雙方權利與義務</h2>
+    <p>3.1 甲方提供之文獻及電子檔案僅用於個人學習、研究等非商業目的，不得用於任何商業用途。</p>
+    <p>3.2 乙方應盡最大努力獲取文獻，若因故無法獲取應及時通知並退還費用。</p>
+
+    <h2>第四條 智慧財產權與保密條款（非常重要）</h2>
+    <p>4.1 乙方僅提供代印、掃描服務，不享有任何智慧財產權。</p>
+    <p>4.2 雙方對在服務過程中知悉的個人資訊保密，期限為 3 年。</p>
+    <p>4.3 甲方承諾：相關內容僅基於個人研究所需，在不違反著作權法的情形下不侵犯任何第三方權益。</p>
+    <p>4.4 若因甲方引發侵權糾紛，全部法律責任由甲方獨立承擔。</p>
+
     <div class="sticky-footer-block">
         <h2>第五條 違約責任與爭議解決</h2>
-        <p>若甲方未按時支付服務費用，每逾期一月，應按照未支付金額的千分之五向乙方支付違約金。本協議引起的任何爭議，雙方應先盡力協商，協商不成時，雙方均<strong>有權</strong>向<strong>乙方（李怡萱）所在地</strong>有管轄權的法院提起訴訟。</p>
+        <p>5.1 若甲方未按時支付服務費用，每逾期一月，應按照未支付金額的千分之五向乙方支付違約金。</p>
+        <p>5.2 本協議引起的任何爭議，雙方應先盡力協商，協商不成時，雙方均<strong>有權</strong>向<strong>乙方（李怡萱）所在地</strong>有管轄權的法院提起訴訟。</p>
 
         <table class="signature-table">
             <tr>
@@ -168,11 +225,10 @@
 </div>
 
 <div class="btn-container">
-    <button class="btn-submit" onclick="generatePDF()">確認資訊並生成最終版 PDF</button>
+    <button class="btn-submit" onclick="generatePDF()">確認資訊並生成常規合約 PDF</button>
 </div>
 
 <script>
-    // 保持邏輯簡化，直接設定 today 和計算函數
     const today = new Date();
     const dateString = `${today.getFullYear()} 年 ${today.getMonth() + 1} 月 ${today.getDate()} 日`;
     document.getElementById('date-partyA').innerText = dateString;
@@ -182,97 +238,4 @@
 
     function calculateCrossTableTotal() {
         const p1 = parseFloat(document.getElementById('doc-page-1').value) || 0;
-        const p2 = parseFloat(document.getElementById('doc-page-2').value) || 0;
-        const p3 = parseFloat(document.getElementById('doc-page-3').value) || 0;
-        document.getElementById('doc-page-summary').value = p1 + p2 + p3;
-        calculatePrices();
-    }
-
-    function calculatePrices() {
-        const summaryPages = parseFloat(document.getElementById('doc-page-summary').value) || 0;
-        const serviceType = document.getElementById('service-type').value;
-        const sizePrint = document.getElementById('size-print').value;
-        const priceDisplay = document.getElementById('price-display');
-        const linkPageDisplay = document.getElementById('link-page-display');
-
-        if (serviceType === 'bw') {
-            currentUnitPrice = (sizePrint === 'A3') ? 8.0 : 4.0;
-        } else if (serviceType === 'color') {
-            currentUnitPrice = (sizePrint === 'A3') ? 22.0 : 12.0;
-        } else if (serviceType === 'scan') {
-            currentUnitPrice = 2.0;
-        } else {
-            currentUnitPrice = 0.0;
-        }
-        
-        linkPageDisplay.value = summaryPages;
-        priceDisplay.value = currentUnitPrice.toFixed(1) + " 元/面";
-        autoSumBudget();
-    }
-
-    function autoSumBudget() {
-        const pageCount = parseFloat(document.getElementById('link-page-display').value) || 0;
-        const totalPrice = (currentUnitPrice * pageCount) + 500.0;
-        
-        document.getElementById('total-num').value = totalPrice.toFixed(2);
-        document.getElementById('total-word').value = numberToChineseTW(totalPrice);
-        document.getElementById('deposit-num').value = (totalPrice * 0.5).toFixed(2);
-        document.getElementById('deposit-word').value = numberToChineseTW(totalPrice * 0.5);
-    }
-
-    function numberToChineseTW(money) {
-        if (money === 0) return '零元整';
-        const cnNums = ['零', '壹', '貳', '參', '肆', '伍', '陸', '柒', '捌', '玖'];
-        const cnIntRadice = ['', '拾', '佰', '仟'];
-        const cnIntUnits = ['', '萬', '億', '兆'];
-        const cnDecUnits = ['角', '分'];
-        const cnInteger = '整';
-        const cnIntLast = '元';
-
-        money = Math.round(money * 100) / 100;
-        let moneyStr = money.toString();
-        let integerNum = moneyStr.split('.')[0];
-        let decimalNum = moneyStr.split('.')[1] || '';
-        if (decimalNum.length === 1) decimalNum += '0';
-
-        let chineseStr = '';
-        for (let i = 0; i < integerNum.length; i++) {
-            let n = integerNum.length - i - 1;
-            chineseStr += cnNums[integerNum[i]] + cnIntRadice[n % 4];
-            if (n % 4 === 0) chineseStr += cnIntUnits[n / 4];
-        }
-        chineseStr += cnIntLast;
-        
-        if (decimalNum === '') chineseStr += cnInteger;
-        else {
-            if (decimalNum[0] !== '0') chineseStr += cnNums[decimalNum[0]] + cnDecUnits[0];
-            if (decimalNum[1] !== '0') chineseStr += cnNums[decimalNum[1]] + cnDecUnits[1];
-        }
-        return chineseStr;
-    }
-
-    // 畫布邏輯與 PDF 生成
-    const canvas = document.getElementById('canvas-partyA');
-    const ctx = canvas.getContext('2d');
-    let isDrawing = false;
-    ctx.strokeStyle = '#000'; ctx.lineWidth = 2.5; ctx.lineCap = 'round';
-    function resizeCanvas() { const rect = canvas.getBoundingClientRect(); canvas.width = rect.width; canvas.height = 110; ctx.lineWidth = 2.5; ctx.lineCap = 'round'; }
-    window.addEventListener('resize', resizeCanvas); setTimeout(resizeCanvas, 300);
-    function getPos(e) { const rect = canvas.getBoundingClientRect(); const clientX = e.touches ? e.touches[0].clientX : e.clientX; const clientY = e.touches ? e.touches[0].clientY : e.clientY; return { x: clientX - rect.left, y: clientY - rect.top }; }
-    function startDraw(e) { isDrawing = true; const pos = getPos(e); ctx.beginPath(); ctx.moveTo(pos.x, pos.y); e.preventDefault(); }
-    function draw(e) { if (!isDrawing) return; const pos = getPos(e); ctx.lineTo(pos.x, pos.y); ctx.stroke(); e.preventDefault(); }
-    canvas.addEventListener('mousedown', startDraw); canvas.addEventListener('mousemove', draw); canvas.addEventListener('mouseup', () => isDrawing = false);
-    canvas.addEventListener('touchstart', startDraw); canvas.addEventListener('touchmove', draw); canvas.addEventListener('touchend', () => isDrawing = false);
-    function clearCanvas() { ctx.clearRect(0, 0, canvas.width, canvas.height); }
-
-    function generatePDF() {
-        document.getElementById('clear-btn').style.display = 'none';
-        const element = document.getElementById('contract-content');
-        const opt = { margin: 15, filename: `學術文獻代印服務同意書.pdf`, html2canvas: { scale: 2 }, jsPDF: { unit: 'mm', format: 'a4' } };
-        html2pdf().set(opt).from(element).save().then(() => {
-            document.getElementById('clear-btn').style.display = 'inline-block';
-        });
-    }
-</script>
-</body>
-</html>
+        const p2 = parseFloat(document.
